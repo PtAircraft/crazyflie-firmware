@@ -29,6 +29,15 @@
 
 #include <stdbool.h>
 #include "filter.h"
+#include "pid.h"
+#include "num.h"
+#include <float.h>
+#include <math.h>
+#include "lqr.h"
+#include <float.h>
+#include "estimator.h"
+#include "lqr.h"
+#include "commander.h"
 
 #define PID_ROLL_RATE_KP  250.0
 #define PID_ROLL_RATE_KI  500.0
@@ -188,5 +197,11 @@ void pidSetKd(PidObject* pid, const float kd);
  * @param[in] pid   A pointer to the pid object.
  * @param[in] dt    Delta time
  */
+
+/* lqr*/
 void pidSetDt(PidObject* pid, const float dt);
+float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint);
+float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint);
+float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint);
+float lqr_m4(state_t *state, sensorData_t *sensors, setpoint_t *setpoint);
 #endif /* PID_H_ */

@@ -33,7 +33,7 @@
 #include "param.h"
 
 #include "stabilizer.h"
-
+#include "pid.h"
 #include "sensors.h"
 #include "commander.h"
 #include "crtp_localization_service.h"
@@ -43,6 +43,7 @@
 
 #include "estimator_kalman.h"
 #include "estimator.h"
+
 
 static bool isInit;
 static bool emergencyStop = false;
@@ -126,19 +127,24 @@ static void stabilizerTask(void* param)
 
     getExtPosition(&state);
     stateEstimator(&state, &sensorData, &control, tick);
-
+    // get set point from commander.c
     commanderGetSetpoint(&setpoint, &state);
 
     sitAwUpdateSetpoint(&setpoint, &sensorData, &state);
 
+    // Run controller
     stateController(&control, &setpoint, &sensorData, &state, tick);
 
     checkEmergencyStopTimeout();
-
+	double t1 = lqr_m1(&state, &sensorData, &setpoint);
+	double t2 = lqr_m2(&state, &sensorData, &setpoint);
+	double t3 = lqr_m3(&state, &sensorData, &setpoint);
+	double t4 = lqr_m4(&state, &sensorData, &setpoint);
     if (emergencyStop) {
       powerStop();
     } else {
-      powerDistribution(&control);
+
+      powerDistribution(&control, t1, t2, t3, t4);
     }
 
     tick++;

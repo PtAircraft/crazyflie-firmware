@@ -31,6 +31,33 @@
 
 #include "motors.h"
 
+///*********/
+//#include "pid.h"
+//#include "num.h"
+//#include <float.h>
+//#include <math.h>
+//#include "lqr.h"
+//
+//#include "stabilizer.h"
+//#include "stabilizer_types.h"
+//
+//#include "attitude_controller.h"
+//#include "sensfusion6.h"
+//#include "position_controller.h"
+//
+//#include "log.h"
+//#include "param.h"
+//
+//#include <stdbool.h>
+//
+//#include "FreeRTOS.h"
+//
+//#include "attitude_controller.h"
+//#include "pid.h"
+//#include "param.h"
+//#include "log.h"
+/***********/
+
 static bool motorSetEnable = false;
 
 static struct {
@@ -71,15 +98,26 @@ void powerStop()
   motorsSetRatio(MOTOR_M4, 0);
 }
 
-void powerDistribution(const control_t *control)
+void powerDistribution(const control_t *control, const double t1, const double t2, const double t3, const double t4)
 {
   #ifdef QUAD_FORMATION_X
-    int16_t r = control->roll / 2.0f;
-    int16_t p = control->pitch / 2.0f;
-    motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
-    motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
-    motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
-    motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
+//    int16_t r = control->roll / 2.0f;
+//    int16_t p = control->pitch / 2.0f;
+//    motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
+//    motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
+//    motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
+//    motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
+    // modification to adapt coordinate system
+//    motorPower.m1 = limitThrust(control->thrust - r - p - control->yaw);
+//    motorPower.m2 = limitThrust(control->thrust - r + p + control->yaw);
+//    motorPower.m3 =  limitThrust(control->thrust + r + p - control->yaw);
+//    motorPower.m4 =  limitThrust(control->thrust + r - p + control->yaw);
+
+    motorPower.m1 = limitThrust(t1);
+    motorPower.m2 = limitThrust(t2);
+    motorPower.m3 =  limitThrust(t3);
+    motorPower.m4 =  limitThrust(t4);
+
   #else // QUAD_FORMATION_NORMAL
     motorPower.m1 = limitThrust(control->thrust + control->pitch +
                                control->yaw);

@@ -101,12 +101,12 @@ void powerStop()
 void powerDistribution(const control_t *control, const double t1, const double t2, const double t3, const double t4)
 {
   #ifdef QUAD_FORMATION_X
-//    int16_t r = control->roll / 2.0f;
-//    int16_t p = control->pitch / 2.0f;
-//    motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
-//    motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
-//    motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
-//    motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
+   int16_t r = control->roll / 2.0f;
+   int16_t p = control->pitch / 2.0f;
+   motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
+   motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
+   motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
+   motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
     // modification to adapt coordinate system
 //    motorPower.m1 = limitThrust(control->thrust - r - p - control->yaw);
 //    motorPower.m2 = limitThrust(control->thrust - r + p + control->yaw);

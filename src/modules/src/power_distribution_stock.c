@@ -71,15 +71,23 @@ void powerStop()
   motorsSetRatio(MOTOR_M4, 0);
 }
 
-void powerDistribution(const control_t *control)
+void powerDistribution(const control_t *control, float t1, float t2, float t3, float t4)
 {
   #ifdef QUAD_FORMATION_X
     int16_t r = control->roll / 2.0f;
     int16_t p = control->pitch / 2.0f;
     motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
+    // motorPower.m1 = 30000;
     motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
     motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
     motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
+
+    // lqr result
+    motorPower.m1 = t1;
+    motorPower.m2 = t2;
+    motorPower.m3 = t3;
+    motorPower.m4 = t4;
+
   #else // QUAD_FORMATION_NORMAL
     motorPower.m1 = limitThrust(control->thrust + control->pitch +
                                control->yaw);

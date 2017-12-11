@@ -157,3 +157,123 @@ void pidSetKd(PidObject* pid, const float kd)
 void pidSetDt(PidObject* pid, const float dt) {
     pid->dt = dt;
 }
+float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
+{
+  const float k11 = 5317.15;
+  const float k12 = -5638.62;
+  const float k13 = -5905.65;
+  const float k14 = -9350.27;
+  const float k15 = -307.46;
+  const float k16 = -458.50;
+  const float k17 = -493.05;
+  float z = state->position.z;
+  float roll = state->attitude.roll;
+  float pitch = state->attitude.pitch;
+//  float yaw = state->attitude.yaw;
+  float z_dot = state->velocity.z;
+  float roll_dot = sensors->gyro.x;
+  float pitch_dot = sensors->gyro.y;
+  float yaw_dot = sensors->gyro.z;
+  float Ct = 3.1582 * pow(10,-10);
+  float x1 = setpoint->position.z - z;
+  float x2 = setpoint->attitude.pitch - pitch;
+  float x3 = setpoint->attitude.roll - roll;
+  float x4 = setpoint->velocity.z - z_dot;
+  float x5 = setpoint->attitudeRate.yaw - yaw_dot;
+  float x6 = setpoint->attitudeRate.pitch - pitch_dot;
+  float x7 = setpoint->attitudeRate.roll - roll_dot;
+  float omega1 = k11 * x1 + k12 * x2 + k13 * x3 + k14 * x4 + k15 * x5 + k16 * x6 + k17 + x7;
+  // convert to thrust;
+  return Ct * omega1 * omega1;
+}
+
+float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
+{
+  const float k21 = 5217.27;
+  const float k22 = 6439.52;
+  const float k23 = -6429.81;
+  const float k24 = 9206.82;
+  const float k25 = 241.37;
+  const float k26  = 545.54;
+  const float k27 = -539.97;
+  float z = state->position.z;
+  float roll = state->attitude.roll;
+  float pitch = state->attitude.pitch;
+//  float yaw = state->attitude.yaw;
+  float z_dot = state->velocity.z;
+  float roll_dot = sensors->gyro.x;
+  float pitch_dot = sensors->gyro.y;
+  float yaw_dot = sensors->gyro.z;
+  float Ct = 3.1582 * pow(10,-10);
+  float x1 = setpoint->position.z - z;
+  float x2 = setpoint->attitude.pitch - pitch;
+  float x3 = setpoint->attitude.roll - roll;
+  float x4 = setpoint->velocity.z - z_dot;
+  float x5 = setpoint->attitudeRate.yaw - yaw_dot;
+  float x6 = setpoint->attitudeRate.pitch - pitch_dot;
+  float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+  float omega2 = k21 * x1 + k22 * x2 + k23 * x3 + k24 * x4 + k25 * x5 + k26 * x6 + k27 + x7;
+  // convert to thrust;
+  return Ct * omega2 * omega2;
+}
+float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
+{
+  const float k31 = 5371.16;
+  const float k32 = 5897.9;
+  const float k33 = 5651.84;
+  const float k34 = 9350.21;
+  const float k35 = -307.23;
+  const float k36 = 497.21;
+  const float k37 = 455.31;
+  float z = state->position.z;
+  float roll = state->attitude.roll;
+  float pitch = state->attitude.pitch;
+//  float yaw = state->attitude.yaw;
+  float z_dot = state->velocity.z;
+  float roll_dot = sensors->gyro.x;
+  float pitch_dot = sensors->gyro.y;
+  float yaw_dot = sensors->gyro.z;
+  float Ct = 3.1582 * pow(10,-10);
+  float x1 = setpoint->position.z - z;
+  float x2 = setpoint->attitude.pitch - pitch;
+  float x3 = setpoint->attitude.roll - roll;
+  float x4 = setpoint->velocity.z - z_dot;
+  float x5 = setpoint->attitudeRate.yaw - yaw_dot;
+  float x6 = setpoint->attitudeRate.pitch - pitch_dot;
+  float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+  float omega3 = k31 * x1 + k32 * x2 + k33 * x3 + k34 * x4 + k35 * x5 + k36 * x6 + k37 + x7;
+  // convert to thrust;
+  return Ct * omega3 * omega3;
+}
+float lqr_m4(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
+{
+  const float k41 = 6958.08;
+  const float k42 = -5028.59;
+  const float k43 = 5017.07;
+  const float k44 = 12282.62;
+  const float k45 = 293.52;
+  const float k46 = -446.6;
+  const float k47 = 441.38;
+  float z = state->position.z;
+  float roll = state->attitude.roll;
+  float pitch = state->attitude.pitch;
+//  float yaw = state->attitude.yaw;
+  float z_dot = state->velocity.z;
+  float roll_dot = sensors->gyro.x;
+  float pitch_dot = sensors->gyro.y;
+  float yaw_dot = sensors->gyro.z;
+  float Ct = 3.1582 * pow(10,-10);
+  float x1 = setpoint->position.z - z;
+  float x2 = setpoint->attitude.pitch - pitch;
+  float x3 = setpoint->attitude.roll - roll;
+  float x4 = setpoint->velocity.z - z_dot;
+  float x5 = setpoint->attitudeRate.yaw - yaw_dot;
+  float x6 = setpoint->attitudeRate.pitch - pitch_dot;
+  float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+  float omega4 = k41 * x1 + k42 * x2 + k43 * x3 + k44 * x4 + k45 * x5 + k46 * x6 + k47 + x7;
+  // convert to thrust;
+  return Ct * omega4 * omega4;
+}

@@ -30,8 +30,6 @@
 #include <stdint.h>
 
 #include "estimator.h"
-//#include "lqr.h"
-#include "commander.h"
 
 #define EMERGENCY_STOP_TIMEOUT_DISABLED (-1)
 

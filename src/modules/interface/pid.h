@@ -29,6 +29,12 @@
 
 #include <stdbool.h>
 #include "filter.h"
+#include "pid.h"
+#include "num.h"
+#include <float.h>
+#include <math.h>
+#include "estimator.h"
+#include "commander.h"
 
 #define PID_ROLL_RATE_KP  250.0
 #define PID_ROLL_RATE_KI  500.0

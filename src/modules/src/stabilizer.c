@@ -54,6 +54,8 @@ static sensorData_t sensorData;
 static state_t state;
 static control_t control;
 
+static float t1, t2, t3, t4;
+
 static void stabilizerTask(void* param);
 
 void stabilizerInit(StateEstimatorType estimator)
@@ -132,7 +134,10 @@ static void stabilizerTask(void* param)
     sitAwUpdateSetpoint(&setpoint, &sensorData, &state);
 
     stateController(&control, &setpoint, &sensorData, &state, tick);
-
+    t1 = lqr_m1(&state, &sensorData, &setpoint);
+    t2 = lqr_m2(&state, &sensorData, &setpoint);
+    t3 = lqr_m3(&state, &sensorData, &setpoint);
+    t4 = lqr_m4(&state, &sensorData, &setpoint);
     checkEmergencyStopTimeout();
 
     if (emergencyStop) {
@@ -165,6 +170,7 @@ LOG_GROUP_START(ctrltarget)
 LOG_ADD(LOG_FLOAT, roll, &setpoint.attitude.roll)
 LOG_ADD(LOG_FLOAT, pitch, &setpoint.attitude.pitch)
 LOG_ADD(LOG_FLOAT, yaw, &setpoint.attitudeRate.yaw)
+LOG_ADD(LOG_FLOAT, z, &setpoint.position.z)
 LOG_GROUP_STOP(ctrltarget)
 
 LOG_GROUP_START(stabilizer)
@@ -223,3 +229,10 @@ LOG_ADD(LOG_FLOAT, x, &state.position.x)
 LOG_ADD(LOG_FLOAT, y, &state.position.y)
 LOG_ADD(LOG_FLOAT, z, &state.position.z)
 LOG_GROUP_STOP(stateEstimate)
+
+LOG_GROUP_START(lqr)
+LOG_ADD(LOG_FLOAT, t1, &t1);
+LOG_ADD(LOG_FLOAT, t2, &t2);
+LOG_ADD(LOG_FLOAT, t3, &t3);
+LOG_ADD(LOG_FLOAT, t4, &t4);
+LOG_GROUP_STOP(lqr)

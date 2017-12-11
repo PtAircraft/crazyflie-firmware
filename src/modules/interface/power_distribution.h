@@ -30,7 +30,7 @@
 
 void powerDistributionInit(void);
 bool powerDistributionTest(void);
-void powerDistribution(const control_t *control);
+void powerDistribution(const control_t *control,float t1, float t2, float t3, float t4);
 void powerStop();
 
 

@@ -43,6 +43,7 @@
 
 #include "estimator_kalman.h"
 #include "estimator.h"
+#include "pid.h"
 
 static bool isInit;
 static bool emergencyStop = false;
@@ -134,16 +135,26 @@ static void stabilizerTask(void* param)
     sitAwUpdateSetpoint(&setpoint, &sensorData, &state);
 
     stateController(&control, &setpoint, &sensorData, &state, tick);
+    float a = 0.2685;
+    float b = 4070.3;
     t1 = lqr_m1(&state, &sensorData, &setpoint);
     t2 = lqr_m2(&state, &sensorData, &setpoint);
     t3 = lqr_m3(&state, &sensorData, &setpoint);
     t4 = lqr_m4(&state, &sensorData, &setpoint);
+    t1 = (t1 - b)/a;
+    t2 = (t2 - b)/a;
+    t3 = (t3 - b)/a;
+    t4 = (t4 - b)/a;
+    t1 = fabs(t1);
+    t2 = fabs(t2);
+    t3 = fabs(t3);
+    t4 = fabs(t4);
     checkEmergencyStopTimeout();
 
     if (emergencyStop) {
       powerStop();
     } else {
-      powerDistribution(&control);
+      powerDistribution(&control, t1, t2, t3, t4);
     }
 
     tick++;
@@ -223,7 +234,7 @@ LOG_GROUP_STOP(mag)
 LOG_GROUP_START(controller)
 LOG_ADD(LOG_INT16, ctr_yaw, &control.yaw)
 LOG_GROUP_STOP(controller)
-
+  
 LOG_GROUP_START(stateEstimate)
 LOG_ADD(LOG_FLOAT, x, &state.position.x)
 LOG_ADD(LOG_FLOAT, y, &state.position.y)
@@ -231,8 +242,8 @@ LOG_ADD(LOG_FLOAT, z, &state.position.z)
 LOG_GROUP_STOP(stateEstimate)
 
 LOG_GROUP_START(lqr)
-LOG_ADD(LOG_FLOAT, t1, &t1);
-LOG_ADD(LOG_FLOAT, t2, &t2);
-LOG_ADD(LOG_FLOAT, t3, &t3);
-LOG_ADD(LOG_FLOAT, t4, &t4);
+LOG_ADD(LOG_FLOAT, t1, &t1)
+LOG_ADD(LOG_FLOAT, t2, &t2)
+LOG_ADD(LOG_FLOAT, t3, &t3)
+LOG_ADD(LOG_FLOAT, t4, &t4)
 LOG_GROUP_STOP(lqr)

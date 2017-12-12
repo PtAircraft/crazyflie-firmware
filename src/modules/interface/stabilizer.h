@@ -65,4 +65,6 @@ void stabilizerResetEmergencyStop();
 void stabilizerSetEmergencyStopTimeout(int timeout);
 
 
+void setOrigin(setpoint_t * setpoint);
+
 #endif /* STABILIZER_H_ */

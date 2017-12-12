@@ -42,6 +42,8 @@ static float lpf1 = 0.945;
 static float lpf2 = 0.0549;
 
 
+
+
 void pidInit(PidObject* pid, const float desired, const float kp,
              const float ki, const float kd, const float dt,
              const float samplingRate, const float cutoffFreq,
@@ -170,22 +172,23 @@ void pidSetKd(PidObject* pid, const float kd)
 void pidSetDt(PidObject* pid, const float dt) {
     pid->dt = dt;
 }
+
+
+
+
+
+
+
 float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  // const float k11 = 5317.15;
-  // const float k12 = -5638.62;
-  // const float k13 = -5905.65;
-  // const float k14 = 9350.27;
-  // const float k15 = -307.46;
-  // const float k16 = -458.50;
-  // const float k17 = -493.05;
-  const float k11 = 529.8;
-  const float k12 = -546.4;
-  const float k13 = -607.7;
-  const float k14 = 2981.7;
-  const float k15 = -620.3;
-  const float k16 = -557.5;
-  const float k17 = -621.1;
+
+  const float k11 = 447.2;
+  const float k12 = -316.1;
+  const float k13 = -316.4;
+  const float k14 = 3812.6;
+  const float k15 = -0;
+  const float k16 = -90.6;
+  const float k17 = -83.9;
 
   float z = state->position.z ;
   float roll = state->attitude.roll;
@@ -222,7 +225,6 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   yaw_dot1_old = yaw_dot;
 
 
-
   float x1 = height - z;
   float x2 = zero - pitch;
   float x3 = zero - roll;
@@ -239,13 +241,13 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 
 float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k21 = 527.4;
-  const float k22 = 630.1;
-  const float k23 = -629.4;
-  const float k24 = 2974.1;
-  const float k25 = 511.9;
-  const float k26  = 644.0;
-  const float k27 = -642.9;
+  const float k21 = 13;
+  const float k22 = 448.3;
+  const float k23 = -446.1;
+  const float k24 = 29;
+  const float k25 = 0;
+  const float k26  = 147.6;
+  const float k27 = -145.0;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
@@ -277,13 +279,13 @@ float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 }
 float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k31 = 529.8;
-  const float k32 = 607.2;
-  const float k33 = 548.2;
-  const float k34 = 2981.7;
-  const float k35 = -629.3;
-  const float k36 = 621.0;
-  const float k37 = 558.9;
+  const float k31 = 447.2;
+  const float k32 = 314.8;
+  const float k33 = 317.7;
+  const float k34 = 3812.7;
+  const float k35 = -0;
+  const float k36 = 84.7;
+  const float k37 = 89.6;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;

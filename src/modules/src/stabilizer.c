@@ -55,9 +55,28 @@ static sensorData_t sensorData;
 static state_t state;
 static control_t control;
 
+static float bias_x = 0;
+static float bias_y = 0;
+static bool set_flag = true;
+
+static float x_flow;
+static float y_flow;
+
 static float t1, t2, t3, t4;
 
 static void stabilizerTask(void* param);
+
+// set flow deck feedback to zero
+
+
+void setOrigin(setpoint_t * setpoint)
+{
+  if (set_flag) {
+    bias_x = setpoint->position.x;
+    bias_y = setpoint->position.y;
+    set_flag = false;
+  }
+}
 
 void stabilizerInit(StateEstimatorType estimator)
 {
@@ -124,6 +143,8 @@ static void stabilizerTask(void* param)
   // Initialize tick to something else then 0
   tick = 1;
 
+  setOrigin(&setpoint);
+
   while(1) {
     vTaskDelayUntil(&lastWakeTime, F2T(RATE_MAIN_LOOP));
 
@@ -135,6 +156,10 @@ static void stabilizerTask(void* param)
     sitAwUpdateSetpoint(&setpoint, &sensorData, &state);
 
     stateController(&control, &setpoint, &sensorData, &state, tick);
+
+    x_flow = setpoint->setpoint.x - bias_x;
+    y_flow = setpoint->setpoint.y - bias_y;
+    
     // lqr output
     t1 = lqr_m1(&state, &sensorData, &setpoint);
     t2 = lqr_m2(&state, &sensorData, &setpoint);
@@ -143,7 +168,6 @@ static void stabilizerTask(void* param)
     // convert RPM to PWM
     float a = 0.2685;
     float b = 4070.3;
-    float k = 0.75;
     t1 = (t1 - b)/a;
     t2 = (t2 - b)/a;
     t3 = (t3 - b)/a;
@@ -152,7 +176,6 @@ static void stabilizerTask(void* param)
     t2 = fabs(t2);
     t3 = fabs(t3);
     t4 = fabs(t4);
-    t4 = k * t4;
     if (t1 > 60000) t1 = 60000;
     if (t2 > 60000) t2 = 60000;
     if (t3 > 60000) t3 = 60000;
@@ -248,6 +271,8 @@ LOG_GROUP_START(stateEstimate)
 LOG_ADD(LOG_FLOAT, x, &state.position.x)
 LOG_ADD(LOG_FLOAT, y, &state.position.y)
 LOG_ADD(LOG_FLOAT, z, &state.position.z)
+LOG_ADD(LOG_FLOAT, x_set, &x_flow)
+LOG_ADD(LOG_FLOAT, y_set, &y_flow)
 LOG_GROUP_STOP(stateEstimate)
 
 LOG_GROUP_START(lqr)

@@ -31,6 +31,17 @@
 static float height = 0.4;
 static float zero = 0;
 
+static float z1_old  = 0;
+static float roll1_old = 0;
+static float pitch1_old = 0;
+static float z_dot1_old = 0;
+static float roll_dot1_old = 0;
+static float pitch_dot1_old = 0;
+static float yaw_dot1_old = 0;
+static float lpf1 = 0.945;
+static float lpf2 = 0.0549;
+
+
 void pidInit(PidObject* pid, const float desired, const float kp,
              const float ki, const float kd, const float dt,
              const float samplingRate, const float cutoffFreq,
@@ -176,7 +187,7 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   const float k16 = -557.5;
   const float k17 = -621.1;
 
-  float z = state->position.z;
+  float z = state->position.z ;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
 //  float yaw = state->attitude.yaw;
@@ -192,6 +203,26 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   // float x5 = setpoint->attitudeRate.yaw - yaw_dot;
   // float x6 = setpoint->attitudeRate.pitch - pitch_dot;
   // float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+  // low pass filter
+  z = lpf1 * z + lpf2 * z1_old;
+  roll = lpf1 * roll + lpf2 * roll1_old;
+  pitch = lpf1 * pitch + lpf2 * pitch1_old;
+  z_dot = lpf1 * z_dot + lpf2 * z_dot1_old;
+  roll_dot = lpf1 * roll_dot + lpf2 * roll_dot1_old;
+  pitch_dot = lpf1 * pitch_dot + lpf2 * pitch_dot1_old;
+  yaw_dot = lpf1 * yaw_dot + lpf2 * yaw_dot1_old;
+
+  z1_old = z;
+  roll1_old = roll;
+  pitch1_old = pitch;
+  z_dot1_old = z_dot;
+  roll_dot1_old = roll1_old;
+  pitch_dot1_old = pitch_dot;
+  yaw_dot1_old = yaw_dot;
+
+
+
   float x1 = height - z;
   float x2 = zero - pitch;
   float x3 = zero - roll;
@@ -293,7 +324,6 @@ float lqr_m4(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
-//  float yaw = state->attitude.yaw;
   float z_dot = state->velocity.z;
   float roll_dot = sensors->gyro.x;
   float pitch_dot = sensors->gyro.y;

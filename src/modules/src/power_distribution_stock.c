@@ -32,6 +32,8 @@
 #include "motors.h"
 
 static bool motorSetEnable = false;
+static bool lqr_enable = false;
+static float loss = 0.25;
 
 static struct {
   uint32_t m1;
@@ -76,17 +78,19 @@ void powerDistribution(const control_t *control, float t1, float t2, float t3, f
   #ifdef QUAD_FORMATION_X
     int16_t r = control->roll / 2.0f;
     int16_t p = control->pitch / 2.0f;
-    motorPower.m1 = limitThrust(control->thrust - r + p + control->yaw);
+    motorPower.m1 = 0.75 * limitThrust(control->thrust - r + p + control->yaw);
     // motorPower.m1 = 30000;
     motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
-    motorPower.m3 =  limitThrust(control->thrust + r - p + control->yaw);
+    motorPower.m3 =  0.75 * limitThrust(control->thrust + r - p + control->yaw);
     motorPower.m4 =  limitThrust(control->thrust + r + p - control->yaw);
 
     // lqr result
-    motorPower.m1 = t1;
-    motorPower.m2 = t2;
-    motorPower.m3 = t3;
-    motorPower.m4 = t4;
+    if (lqr_enable) {
+      motorPower.m1 = t1;
+      motorPower.m2 = t2;
+      motorPower.m3 = t3;
+      motorPower.m4 = t4;
+    }
 
   #else // QUAD_FORMATION_NORMAL
     motorPower.m1 = limitThrust(control->thrust + control->pitch +
@@ -101,10 +105,14 @@ void powerDistribution(const control_t *control, float t1, float t2, float t3, f
 
   if (motorSetEnable)
   {
-    motorsSetRatio(MOTOR_M1, motorPowerSet.m1);
-    motorsSetRatio(MOTOR_M2, motorPowerSet.m2);
-    motorsSetRatio(MOTOR_M3, motorPowerSet.m3);
-    motorsSetRatio(MOTOR_M4, motorPowerSet.m4);
+    // motorsSetRatio(MOTOR_M1, motorPowerSet.m1);
+    // motorsSetRatio(MOTOR_M2, motorPowerSet.m2);
+    // motorsSetRatio(MOTOR_M3, motorPowerSet.m3);
+    // motorsSetRatio(MOTOR_M4, motorPowerSet.m4);
+    motorsSetRatio(MOTOR_M1, motorPower.m1);
+    motorsSetRatio(MOTOR_M2, motorPower.m2);
+    motorsSetRatio(MOTOR_M3, motorPower.m3);
+    motorsSetRatio(MOTOR_M4, motorPower.m4);
   }
   else
   {
@@ -122,6 +130,11 @@ PARAM_ADD(PARAM_UINT16, m2, &motorPowerSet.m2)
 PARAM_ADD(PARAM_UINT16, m3, &motorPowerSet.m3)
 PARAM_ADD(PARAM_UINT16, m4, &motorPowerSet.m4)
 PARAM_GROUP_STOP(ring)
+
+PARAM_GROUP_START(rotorFailureSet)
+PARAM_ADD(PARAM_FLOAT, loss, &loss)
+PARAM_ADD(PARAM_UINT8, lqr_enable, &lqr_enable)
+PARAM_GROUP_STOP(rotorFailureSet)
 
 LOG_GROUP_START(motor)
 LOG_ADD(LOG_INT32, m4, &motorPower.m4)

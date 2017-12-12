@@ -161,13 +161,21 @@ void pidSetDt(PidObject* pid, const float dt) {
 }
 float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k11 = 5317.15;
-  const float k12 = -5638.62;
-  const float k13 = -5905.65;
-  const float k14 = -9350.27;
-  const float k15 = -307.46;
-  const float k16 = -458.50;
-  const float k17 = -493.05;
+  // const float k11 = 5317.15;
+  // const float k12 = -5638.62;
+  // const float k13 = -5905.65;
+  // const float k14 = 9350.27;
+  // const float k15 = -307.46;
+  // const float k16 = -458.50;
+  // const float k17 = -493.05;
+  const float k11 = 529.8;
+  const float k12 = -546.4;
+  const float k13 = -607.7;
+  const float k14 = 2981.7;
+  const float k15 = -620.3;
+  const float k16 = -557.5;
+  const float k17 = -621.1;
+
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
@@ -200,13 +208,13 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 
 float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k21 = 5217.27;
-  const float k22 = 6439.52;
-  const float k23 = -6429.81;
-  const float k24 = 9206.82;
-  const float k25 = 241.37;
-  const float k26  = 545.54;
-  const float k27 = -539.97;
+  const float k21 = 527.4;
+  const float k22 = 630.1;
+  const float k23 = -629.4;
+  const float k24 = 2974.1;
+  const float k25 = 511.9;
+  const float k26  = 644.0;
+  const float k27 = -642.9;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
@@ -238,13 +246,13 @@ float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 }
 float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k31 = 5371.16;
-  const float k32 = 5897.9;
-  const float k33 = 5651.84;
-  const float k34 = 9350.21;
-  const float k35 = -307.23;
-  const float k36 = 497.21;
-  const float k37 = 455.31;
+  const float k31 = 529.8;
+  const float k32 = 607.2;
+  const float k33 = 548.2;
+  const float k34 = 2981.7;
+  const float k35 = -629.3;
+  const float k36 = 621.0;
+  const float k37 = 558.9;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
@@ -275,13 +283,13 @@ float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 }
 float lqr_m4(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k41 = 6958.08;
-  const float k42 = -5028.59;
-  const float k43 = 5017.07;
-  const float k44 = 12282.62;
-  const float k45 = 293.52;
-  const float k46 = -446.6;
-  const float k47 = 441.38;
+  const float k41 = 702.8;
+  const float k42 = -518.7;
+  const float k43 = 517.2;
+  const float k44 = 396.57;
+  const float k45 = 550.3;
+  const float k46 = -533.3;
+  const float k47 = 531.5;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = state->attitude.pitch;
@@ -290,7 +298,7 @@ float lqr_m4(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   float roll_dot = sensors->gyro.x;
   float pitch_dot = sensors->gyro.y;
   float yaw_dot = sensors->gyro.z;
-  float Ct = 3.1582 * pow(10,-10);
+  // float Ct = 3.1582 * pow(10,-10);
   // float x1 = setpoint->position.z - z;
   // float x2 = setpoint->attitude.pitch - pitch;
   // float x3 = setpoint->attitude.roll - roll;

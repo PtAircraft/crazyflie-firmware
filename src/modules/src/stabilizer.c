@@ -143,6 +143,7 @@ static void stabilizerTask(void* param)
     // convert RPM to PWM
     float a = 0.2685;
     float b = 4070.3;
+    float k = 0.75;
     t1 = (t1 - b)/a;
     t2 = (t2 - b)/a;
     t3 = (t3 - b)/a;
@@ -151,6 +152,7 @@ static void stabilizerTask(void* param)
     t2 = fabs(t2);
     t3 = fabs(t3);
     t4 = fabs(t4);
+    t4 = k * t4;
     if (t1 > 60000) t1 = 60000;
     if (t2 > 60000) t2 = 60000;
     if (t3 > 60000) t3 = 60000;

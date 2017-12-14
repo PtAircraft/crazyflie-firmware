@@ -182,21 +182,21 @@ void pidSetDt(PidObject* pid, const float dt) {
 float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
 
-  const float k11 = 447.2;
-  const float k12 = -316.1;
-  const float k13 = -316.4;
-  const float k14 = 3812.6;
-  const float k15 = -0;
-  const float k16 = -90.6;
-  const float k17 = -83.9;
+  const float k11 = 1414.2;
+  const float k12 = -996.57;
+  const float k13 = -1003.5;
+  const float k14 = 6278.6;
+  const float k15 = -0.00046171;
+  const float k16 = -149.97;
+  const float k17 = -139.56;
 
   float z = state->position.z ;
   float roll = state->attitude.roll;
-  float pitch = state->attitude.pitch;
+  float pitch = -state->attitude.pitch;
 //  float yaw = state->attitude.yaw;
   float z_dot = state->velocity.z;
   float roll_dot = sensors->gyro.x;
-  float pitch_dot = sensors->gyro.y;
+  float pitch_dot = -sensors->gyro.y;
   float yaw_dot = sensors->gyro.z;
   // float Ct = 3.1582 * pow(10,-10);
   // float x1 = setpoint->position.z - z;
@@ -241,20 +241,20 @@ float lqr_m1(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 
 float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k21 = 13;
-  const float k22 = 448.3;
-  const float k23 = -446.1;
-  const float k24 = 29;
-  const float k25 = 0;
-  const float k26  = 147.6;
-  const float k27 = -145.0;
+  const float k21 = 3.1578;
+  const float k22 = 1412.3;
+  const float k23 = -1407.1;
+  const float k24 = 2.7634;
+  const float k25 = 00000029217;
+  const float k26  = 295.88;
+  const float k27 = -289.7;
   float z = state->position.z;
   float roll = state->attitude.roll;
-  float pitch = state->attitude.pitch;
+  float pitch = -state->attitude.pitch;
 //  float yaw = state->attitude.yaw;
   float z_dot = state->velocity.z;
   float roll_dot = sensors->gyro.x;
-  float pitch_dot = sensors->gyro.y;
+  float pitch_dot = -sensors->gyro.y;
   float yaw_dot = sensors->gyro.z;
   // float Ct = 3.1582 * pow(10,-10);
   // float x1 = setpoint->position.z - z;
@@ -264,6 +264,23 @@ float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   // float x5 = setpoint->attitudeRate.yaw - yaw_dot;
   // float x6 = setpoint->attitudeRate.pitch - pitch_dot;
   // float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+  // low pass filter
+  z = lpf1 * z + lpf2 * z1_old;
+  roll = lpf1 * roll + lpf2 * roll1_old;
+  pitch = lpf1 * pitch + lpf2 * pitch1_old;
+  z_dot = lpf1 * z_dot + lpf2 * z_dot1_old;
+  roll_dot = lpf1 * roll_dot + lpf2 * roll_dot1_old;
+  pitch_dot = lpf1 * pitch_dot + lpf2 * pitch_dot1_old;
+  yaw_dot = lpf1 * yaw_dot + lpf2 * yaw_dot1_old;
+
+  z1_old = z;
+  roll1_old = roll;
+  pitch1_old = pitch;
+  z_dot1_old = z_dot;
+  roll_dot1_old = roll1_old;
+  pitch_dot1_old = pitch_dot;
+  yaw_dot1_old = yaw_dot;
 
   float x1 = height - z;
   float x2 = zero - pitch;
@@ -279,20 +296,20 @@ float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 }
 float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
 {
-  const float k31 = 447.2;
-  const float k32 = 314.8;
-  const float k33 = 317.7;
-  const float k34 = 3812.7;
-  const float k35 = -0;
-  const float k36 = 84.7;
-  const float k37 = 89.6;
+  const float k31 = 1414.2;
+  const float k32 = 996.57;
+  const float k33 = 1006.6;
+  const float k34 = 6278.6;
+  const float k35 = -0.00046167;
+  const float k36 = 149.97;
+  const float k37 = 8139;
   float z = state->position.z;
   float roll = state->attitude.roll;
-  float pitch = state->attitude.pitch;
+  float pitch = -state->attitude.pitch;
 //  float yaw = state->attitude.yaw;
   float z_dot = state->velocity.z;
   float roll_dot = sensors->gyro.x;
-  float pitch_dot = sensors->gyro.y;
+  float pitch_dot = -sensors->gyro.y;
   float yaw_dot = sensors->gyro.z;
   // float Ct = 3.1582 * pow(10,-10);
   // float x1 = setpoint->position.z - z;
@@ -302,6 +319,25 @@ float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   // float x5 = setpoint->attitudeRate.yaw - yaw_dot;
   // float x6 = setpoint->attitudeRate.pitch - pitch_dot;
   // float x7 = setpoint->attitudeRate.roll - roll_dot;
+
+
+  // low pass filter
+  z = lpf1 * z + lpf2 * z1_old;
+  roll = lpf1 * roll + lpf2 * roll1_old;
+  pitch = lpf1 * pitch + lpf2 * pitch1_old;
+  z_dot = lpf1 * z_dot + lpf2 * z_dot1_old;
+  roll_dot = lpf1 * roll_dot + lpf2 * roll_dot1_old;
+  pitch_dot = lpf1 * pitch_dot + lpf2 * pitch_dot1_old;
+  yaw_dot = lpf1 * yaw_dot + lpf2 * yaw_dot1_old;
+
+  z1_old = z;
+  roll1_old = roll;
+  pitch1_old = pitch;
+  z_dot1_old = z_dot;
+  roll_dot1_old = roll1_old;
+  pitch_dot1_old = pitch_dot;
+  yaw_dot1_old = yaw_dot;
+
   float x1 = height - z;
   float x2 = zero - pitch;
   float x3 = zero - roll;

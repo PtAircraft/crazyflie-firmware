@@ -161,17 +161,23 @@ static void stabilizerTask(void* param)
     y_flow = setpoint->setpoint.y - bias_y;
     
     // lqr output
-    t1 = lqr_m1(&state, &sensorData, &setpoint);
-    t2 = lqr_m2(&state, &sensorData, &setpoint);
-    t3 = lqr_m3(&state, &sensorData, &setpoint);
-    t4 = lqr_m4(&state, &sensorData, &setpoint);
+    t1r = lqr_m1(&state, &sensorData, &setpoint);
+    t2r = lqr_m2(&state, &sensorData, &setpoint);
+    t3r = lqr_m3(&state, &sensorData, &setpoint);
+    t4r = lqr_m4(&state, &sensorData, &setpoint);
     // convert RPM to PWM
     float a = 0.2685;
     float b = 4070.3;
-    t1 = (t1 - b)/a;
-    t2 = (t2 - b)/a;
-    t3 = (t3 - b)/a;
-    t4 = (t4 - b)/a;
+    float k = 1;
+    float we = 44703;
+    float te = 16073;
+    float bias1 = 10;
+    float bias2 = 0;
+    float bias3 = 0;
+    t1 = (t1r + te - b)/a;
+    t2 = (t2r + te - b)/a;
+    t3 = (t3r + te - b)/a;
+    t4 = k * we;
     t1 = fabs(t1);
     t2 = fabs(t2);
     t3 = fabs(t3);
@@ -180,6 +186,9 @@ static void stabilizerTask(void* param)
     if (t2 > 60000) t2 = 60000;
     if (t3 > 60000) t3 = 60000;
     if (t4 > 60000) t4 = 60000;
+
+    if (t4 - t2 > 200) t2 = t4 - 200;
+    if (t2 - t4 > 400) t2 = t4 + 200;
 
     checkEmergencyStopTimeout();
 
@@ -281,3 +290,10 @@ LOG_ADD(LOG_FLOAT, t2, &t2)
 LOG_ADD(LOG_FLOAT, t3, &t3)
 LOG_ADD(LOG_FLOAT, t4, &t4)
 LOG_GROUP_STOP(lqr)
+
+LOG_GROUP_START(tr)
+LOG_ADD(LOG_FLOAT, t1r, &t1r)
+LOG_ADD(LOG_FLOAT, t2r, &t2r)
+LOG_ADD(LOG_FLOAT, t3r, &t3r)
+LOG_ADD(LOG_FLOAT, t4r, &t4r)
+LOG_GROUP_STOP(tr)

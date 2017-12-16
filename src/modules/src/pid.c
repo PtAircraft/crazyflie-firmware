@@ -245,7 +245,7 @@ float lqr_m2(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   const float k22 = 1412.3;
   const float k23 = -1407.1;
   const float k24 = 2.7634;
-  const float k25 = 00000029217;
+  const float k25 = 0.0000029217;
   const float k26  = 295.88;
   const float k27 = -289.7;
   float z = state->position.z;
@@ -302,7 +302,7 @@ float lqr_m3(state_t *state, sensorData_t *sensors, setpoint_t *setpoint)
   const float k34 = 6278.6;
   const float k35 = -0.00046167;
   const float k36 = 149.97;
-  const float k37 = 8139;
+  const float k37 = 139;
   float z = state->position.z;
   float roll = state->attitude.roll;
   float pitch = -state->attitude.pitch;

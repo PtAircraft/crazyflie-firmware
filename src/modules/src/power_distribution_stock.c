@@ -34,7 +34,7 @@
 static bool motorSetEnable = false;
 static bool lqr_enable = false;
 static float loss = 0.25;
-static bool failure_set = false;
+// static bool failure_set = false;
 
 
 static struct {
@@ -81,24 +81,30 @@ void powerDistribution(const control_t *control, float t1, float t2, float t3, f
     int16_t r = control->roll / 2.0f;
     int16_t p = control->pitch / 2.0f;
     float scale = 1;
+    float bias = 4000;
     motorPower.m1 = scale * limitThrust(control->thrust - r + p + control->yaw);
     motorPower.m2 = limitThrust(control->thrust - r - p - control->yaw);
-    motorPower.m3 = scale * imitThrust(control->thrust + r - p + control->yaw);
+    motorPower.m3 = scale * limitThrust(control->thrust + r - p + control->yaw);
     motorPower.m4 = limitThrust(control->thrust + r + p - control->yaw);
 
     // lqr result
     if (lqr_enable) {
-      motorPower.m1 = t1;
-      motorPower.m2 = t2;
-      motorPower.m3 = t3;
-      motorPower.m4 = t4;
-    }
-
-    // mixed result
-    if (failure_set) {
+      // motorPower.m1 = t1;
+      // motorPower.m2 = t2;
+      // motorPower.m3 = t3;
+      // motorPower.m4 = t4;
+      motorPower.m1 = scale * limitThrust(control->thrust - r + p + control->yaw) + bias;
+      motorPower.m3 = scale * limitThrust(control->thrust + r - p + control->yaw) + bias;
+     
       if (motorPower.m2 != 0) motorPower.m2 = t2;
       if (motorPower.m4 != 0) motorPower.m4 = t4;
     }
+
+    // mixed result
+    // if (failure_set) {
+    //   if (motorPower.m2 != 0) motorPower.m2 = t2;
+    //   if (motorPower.m4 != 0) motorPower.m4 = t4;
+    // }
 
   #else // QUAD_FORMATION_NORMAL
     motorPower.m1 = limitThrust(control->thrust + control->pitch +
@@ -138,7 +144,7 @@ PARAM_GROUP_STOP(ring)
 PARAM_GROUP_START(rotorFailureSet)
 PARAM_ADD(PARAM_FLOAT, loss, &loss)
 PARAM_ADD(PARAM_UINT8, lqr_enable, &lqr_enable)
-PARAM_ADD(PARAM_UINT8, failure_set, &failure_set)
+// PARAM_ADD(PARAM_UINT8, failure_set, &failure_set)
 PARAM_GROUP_STOP(rotorFailureSet)
 
 LOG_GROUP_START(motor)
